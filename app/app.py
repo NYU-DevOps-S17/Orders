@@ -47,15 +47,21 @@ def index():
 ######################################################################
 @app.route('/orders', methods=['GET'])
 def list_orders():
-    results = orders.values()
-    amount_paid = request.args.get('amount_paid')
-    if amount_paid:
-        results = []
-        for key, value in orders.iteritems():
-            if value['amount_paid'] == amount_paid:
-                results.append(orders[key])
-
-    return reply(results, HTTP_200_OK)
+	results = orders.values()
+	amount_paid = request.args.get('amount_paid')
+	customer_name = request.args.get('customer_name')
+	if amount_paid:
+		results = []
+		for key, value in orders.iteritems():
+			if str(value['amount_paid']) == str(amount_paid):
+				results.append(orders[key])
+	elif customer_name:
+		results = []
+		for key, value in orders.iteritems():
+			if str(value['customer_name']).lower() == str(customer_name).lower():
+				results.append(orders[key])
+				
+	return reply(results, HTTP_200_OK)
 
 ######################################################################
 # RETRIEVE A Order
