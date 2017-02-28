@@ -3,8 +3,8 @@ applications:
   memory: 64M
   instances: 1
   domain: mybluemix.net
-  name: nyu-devops-team-bravo
-  host: nyu-devops-team-bravo
+  name: nyu-devops-s17-orders
+  host: nyu-devops-s17-orders
   disk_quota: 1024M
   buildpack: python_buildpack
   services:
