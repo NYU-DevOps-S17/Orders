@@ -3,8 +3,8 @@ applications:
   memory: 128M
   instances: 1
   domain: mybluemix.net
-  name: nyu-devops-orders
-  host: nyu-devops-orders
+  name: nyu-bluemix-test
+  host: nyu-bluemix-test
   disk_quota: 1024M
   buildpack: python_buildpack
   services:
