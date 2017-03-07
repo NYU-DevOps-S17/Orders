@@ -122,6 +122,24 @@ def delete_orders(id):
     del orders[id];
     return '', HTTP_204_NO_CONTENT
 
+######################################################################      
+# DUPLICATE A Order
+######################################################################
+@app.route('/orders/<int:id>/duplicate', methods=['GET'])
+def duplicate_order(id):
+    if orders.has_key(id):
+        message = orders[id]
+
+        new_id = next_index()
+        orders[new_id] = {'id': new_id, 'customer_name': message['customer_name'], 'amount_paid': message['amount_paid']}
+        message = orders[new_id]
+        rc = HTTP_201_CREATED
+    else:
+        message = { 'error' : 'Order with id: %s was not found' % str(id) }
+        rc = HTTP_404_NOT_FOUND
+
+    return reply(message, rc)
+
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
