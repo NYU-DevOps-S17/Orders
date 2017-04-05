@@ -19,45 +19,45 @@ from werkzeug.exceptions import NotFound
 from custom_exceptions import DataValidationError
 
 ######################################################################
-# Pet Model for database
+# Order Model for database
 #   This class must be initialized with use_db(redis) before using
 #   where redis is a value connection to a Redis database
 ######################################################################
-class Pet(object):
+class Order(object):
     __redis = None
 
-    def __init__(self, id=0, name=None, category=None):
+    def __init__(self, id=0, customer_name=None, amount_paid=None):
         self.id = int(id)
-        self.name = name
-        self.category = category
+        self.customer_name = customer_name
+        self.amount_paid = amount_paid
 
     def self_url(self):
-        return url_for('get_pets', id=self.id, _external=True)
+        return url_for('get_orders', id=self.id, _external=True)
 
     def save(self):
-        if self.name == None:
-            raise AttributeError('name attribute is not set')
+        if self.customer_name == None:
+            raise AttributeError('customer_name attribute is not set')
         if self.id == 0:
             self.id = self.__next_index()
-        Pet.__redis.hmset(self.id, self.serialize())
+        Order.__redis.hmset(self.id, self.serialize())
 
     def delete(self):
-        Pet.__redis.delete(self.id)
+        Order.__redis.delete(self.id)
 
     def __next_index(self):
-        return Pet.__redis.incr('index')
+        return Order.__redis.incr('index')
 
     def serialize(self):
-        return { "id": self.id, "name": self.name, "category": self.category }
+        return { "id": self.id, "customer_name": self.customer_name, "amount_paid": self.amount_paid }
 
     def deserialize(self, data):
         try:
-            self.name = data['name']
-            self.category = data['category']
+            self.customer_name = data['customer_name']
+            self.amount_paid = data['amount_paid']
         except KeyError as e:
-            raise DataValidationError('Invalid pet: missing ' + e.args[0])
+            raise DataValidationError('Invalid order: missing ' + e.args[0])
         except TypeError as e:
-            raise DataValidationError('Invalid pet: body of request contained bad or no data')
+            raise DataValidationError('Invalid order: body of request contained bad or no data')
         return self
 
 ######################################################################
@@ -66,46 +66,46 @@ class Pet(object):
 
     @staticmethod
     def use_db(redis):
-        Pet.__redis = redis
+        Order.__redis = redis
 
     @staticmethod
     def remove_all():
-        Pet.__redis.flushall()
+        Order.__redis.flushall()
 
     @staticmethod
     def all():
-        # results = [Pet.from_dict(redis.hgetall(key)) for key in redis.keys() if key != 'index']
+        # results = [Order.from_dict(redis.hgetall(key)) for key in redis.keys() if key != 'index']
         results = []
-        for key in Pet.__redis.keys():
+        for key in Order.__redis.keys():
             if key != 'index':  # filer out our id index
-                data = Pet.__redis.hgetall(key)
-                pet = Pet(data['id']).deserialize(data)
-                results.append(pet)
+                data = Order.__redis.hgetall(key)
+                order = Order(data['id']).deserialize(data)
+                results.append(order)
         return results
 
     @staticmethod
     def find(id):
-        if Pet.__redis.exists(id):
-            data = Pet.__redis.hgetall(id)
-            pet = Pet(data['id']).deserialize(data)
-            return pet
+        if Order.__redis.exists(id):
+            data = Order.__redis.hgetall(id)
+            order = Order(data['id']).deserialize(data)
+            return order
         else:
             return None
 
     @staticmethod
     def find_or_404(id):
-        pet = Pet.find(id)
-        if not pet:
-            raise NotFound("Pet with id '{}' was not found.".format(id))
-        return pet
+        order = Order.find(id)
+        if not order:
+            raise NotFound("Order with id '{}' was not found.".format(id))
+        return order
 
     @staticmethod
-    def find_by_category(category):
-        # return [pet for pet in Pet.__data if pet.category == category]
+    def find_by_customer_name(customer_name):
+        # return [order for order in Order.__data if order.amount_paid == amount_paid]
         results = []
-        for key in Pet.__redis.keys():
+        for key in Order.__redis.keys():
             if key != 'index':  # filer out our id index
-                data = Pet.__redis.hgetall(key)
-                if data['category'] == category:
-                    results.append(Pet(data['id']).deserialize(data))
+                data = Order.__redis.hgetall(key)
+                if data['customer_name'] == customer_name:
+                    results.append(Order(data['id']).deserialize(data))
         return results

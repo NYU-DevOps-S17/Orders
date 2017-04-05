@@ -21,7 +21,7 @@ from redis.exceptions import ConnectionError
 from flask import Flask, Response, jsonify, request, json, url_for, make_response
 from flask_api import status    # HTTP Status Codes
 from werkzeug.exceptions import NotFound
-from models import Pet
+from models import Order
 from . import app
 
 # Error handlers reuire app to be initialized so we must import
@@ -35,71 +35,89 @@ redis = None
 ######################################################################
 @app.route('/')
 def index():
-    # data = '{name: <string>, category: <string>}'
-    # url = request.base_url + 'pets' # url_for('list_pets')
-    # return jsonify(name='Pet Demo REST API Service', version='1.0', url=url, data=data), status.HTTP_200_OK
+    # data = '{customer_name: <string>, amount_paid: <string>}'
+    # url = request.base_url + 'orders' # url_for('list_orders')
+    # return jsonify(customer_name='Order Demo REST API Service', version='1.0', url=url, data=data), status.HTTP_200_OK
     return app.send_static_file('index.html')
 
 ######################################################################
-# LIST ALL PETS
+# LIST ALL ORDERS
 ######################################################################
-@app.route('/pets', methods=['GET'])
-def list_pets():
-    pets = []
-    category = request.args.get('category')
-    if category:
-        pets = Pet.find_by_category(category)
+@app.route('/orders', methods=['GET'])
+def list_orders():
+    orders = []
+    customer_name = request.args.get('customer_name')
+    if customer_name:
+        orders = Order.find_by_customer_name(customer_name)
     else:
-        pets = Pet.all()
+        orders = Order.all()
 
-    results = [pet.serialize() for pet in pets]
+    results = [order.serialize() for order in orders]
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 ######################################################################
-# RETRIEVE A PET
+# RETRIEVE A ORDER
 ######################################################################
-@app.route('/pets/<int:id>', methods=['GET'])
-def get_pets(id):
-    pet = Pet.find_or_404(id)
-    return make_response(jsonify(pet.serialize()), status.HTTP_200_OK)
+@app.route('/orders/<int:id>', methods=['GET'])
+def get_orders(id):
+    order = Order.find_or_404(id)
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
 ######################################################################
-# ADD A NEW PET
+# ADD A NEW ORDER
 ######################################################################
-@app.route('/pets', methods=['POST'])
-def create_pets():
+@app.route('/orders', methods=['POST'])
+def create_orders():
     # Check for form submission data
     print 'Headers: {}'.format(request.headers.get('Content-Type'))
     data = {}
     if request.headers.get('Content-Type') == 'application/x-www-form-urlencoded':
-        data = {'name': request.form['name'], 'category': request.form['category']}
+        data = {'customer_name': request.form['customer_name'], 'amount_paid': request.form['amount_paid']}
     else:
         data = request.get_json()
-    pet = Pet()
-    pet.deserialize(data)
-    pet.save()
-    message = pet.serialize()
-    return make_response(jsonify(message), status.HTTP_201_CREATED, {'Location': pet.self_url() })
+    order = Order()
+    order.deserialize(data)
+    order.save()
+    message = order.serialize()
+    return make_response(jsonify(message), status.HTTP_201_CREATED, {'Location': order.self_url() })
 
 ######################################################################
-# UPDATE AN EXISTING PET
+# UPDATE AN EXISTING ORDER
 ######################################################################
-@app.route('/pets/<int:id>', methods=['PUT'])
-def update_pets(id):
-    pet = Pet.find_or_404(id)
-    pet.deserialize(request.get_json())
-    pet.save()
-    return make_response(jsonify(pet.serialize()), status.HTTP_200_OK)
+@app.route('/orders/<int:id>', methods=['PUT'])
+def update_orders(id):
+    order = Order.find_or_404(id)
+    order.deserialize(request.get_json())
+    order.save()
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
 ######################################################################
-# DELETE A PET
+# DELETE A ORDER
 ######################################################################
-@app.route('/pets/<int:id>', methods=['DELETE'])
-def delete_pets(id):
-    pet = Pet.find(id)
-    if pet:
-        pet.delete()
+@app.route('/orders/<int:id>', methods=['DELETE'])
+def delete_orders(id):
+    order = Order.find(id)
+    if order:
+        order.delete()
     return make_response('', status.HTTP_204_NO_CONTENT)
+
+######################################################################
+# DUPLICATE A Order
+######################################################################
+@app.route('/orders/<int:id>/duplicate', methods=['PUT'])
+def duplicate_order(id):
+    orders = Order.all()
+    order = Order.find(id)
+    if order:
+        message = order['id']
+
+        new_id = orders.next_index()
+        orders[new_id] = {'id': new_id, 'customer_name': message['customer_name'], 'amount_paid': message['amount_paid']}
+        message = orders[new_id]
+        return make_response(jsonify(message), status.HTTP_201_CREATED, {'Location': order.self_url() })
+    else:
+        message = { 'error' : 'Order with id: %s was not found' % str(id) }
+        return make_response(jsonify(message), status.HTTP_400_BAD_REQUEST)
 
 
 ######################################################################
@@ -107,7 +125,7 @@ def delete_pets(id):
 ######################################################################
 # load sample data
 def data_load(data):
-    Pet().deserialize(data).save()
+    Order().deserialize(data).save()
 
 # empty the database
 def data_reset():
@@ -164,5 +182,5 @@ def inititalize_redis():
     if not redis:
         # if you end up here, redis instance is down.
         app.logger.error('*** FATAL ERROR: Could not connect to the Redis Service')
-    # Have the Pet model use Redis
-    Pet.use_db(redis)
+    # Have the Order model use Redis
+    Order.use_db(redis)
