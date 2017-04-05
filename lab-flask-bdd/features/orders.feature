@@ -6,9 +6,9 @@ Feature: The orders service back-end
 Background:
     Given the following pets
         | id | customer_name       | amount_paid |  
-        |  1 | fido                | dog         |
-        |  2 | kitty               | cat         |
-        |  3 | leo                 | lion        |
+        |  1 | fido                | 100         |
+        |  2 | kitty               | 400         |
+        |  3 | leo                 | 1000        |
 
 Scenario: The server is running
     When I visit the "home page"
@@ -23,9 +23,9 @@ Scenario: List all orders
 
 Scenario: Update a order
     When I retrieve "/orders" with id "1"
-    And I change "amount_paid" to "big dog"
+    And I change "amount_paid" to "200"
     And I update "/orders" with id "1"
-    Then I should see "big dog"
+    Then I should see "200"
 
 Scenario: Delete a order
     When I visit "/orders"
