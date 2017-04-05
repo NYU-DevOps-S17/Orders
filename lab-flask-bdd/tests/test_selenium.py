@@ -32,7 +32,7 @@ class TestOrderServerWeb(unittest.TestCase):
         nameElement.send_keys("Tom")
         categoryElement = self.driver.find_element_by_name("amount_paid")
         categoryElement.clear()
-        categoryElement.send_keys(200)
+        categoryElement.send_keys('200')
         self.driver.find_element_by_id("submit").click()
         self.assertIn(
             "http://localhost:5000/orders", self.driver.current_url
