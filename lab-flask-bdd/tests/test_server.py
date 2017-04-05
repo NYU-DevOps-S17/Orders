@@ -28,8 +28,8 @@ class TestOrderServer(unittest.TestCase):
         self.app = server.app.test_client()
         server.inititalize_redis()
         server.data_reset()
-        server.data_load({"customer_name": "Tom", "amount_paid": 200})
-        server.data_load({"customer_name": "Bob", "amount_paid": 300})
+        server.data_load({"customer_name": "Tom", "amount_paid": "200"})
+        server.data_load({"customer_name": "Bob", "amount_paid": "300"})
 
     def test_index(self):
         resp = self.app.get('/')
@@ -56,7 +56,7 @@ class TestOrderServer(unittest.TestCase):
         # save the current number of orders for later comparrison
         order_count = self.get_order_count()
         # add a new order
-        new_order = {'customer_name': 'Kate', 'amount_paid': 400}
+        new_order = {'customer_name': 'Kate', 'amount_paid': '400'}
         data = json.dumps(new_order)
         resp = self.app.post('/orders', data=data, content_type='application/json')
         self.assertEqual( resp.status_code, HTTP_201_CREATED )
@@ -75,23 +75,23 @@ class TestOrderServer(unittest.TestCase):
         self.assertIn( new_json, data )
 
     def test_update_order(self):
-        new_order = {'customer_name': 'Bob', 'amount_paid': 500}
+        new_order = {'customer_name': 'Bob', 'amount_paid': '500'}
         data = json.dumps(new_order)
         resp = self.app.put('/orders/2', data=data, content_type='application/json')
         self.assertEqual( resp.status_code, HTTP_200_OK )
         resp = self.app.get('/orders/2', content_type='application/json')
         self.assertEqual( resp.status_code, HTTP_200_OK )
         new_json = json.loads(resp.data)
-        self.assertEqual (new_json['amount_paid'], 500)
+        self.assertEqual (new_json['amount_paid'], '500')
 
     def test_update_order_with_no_customer_name(self):
-        new_order = {'amount_paid': 200}
+        new_order = {'amount_paid': '200'}
         data = json.dumps(new_order)
         resp = self.app.put('/orders/2', data=data, content_type='application/json')
         self.assertEqual( resp.status_code, HTTP_400_BAD_REQUEST )
 
     def test_update_order_not_found(self):
-        new_order = {"customer_name": "ossso", "amount_paid": 3000}
+        new_order = {"customer_name": "ossso", "amount_paid": '3000'}
         data = json.dumps(new_order)
         resp = self.app.put('/orders/0', data=data, content_type='application/json')
         self.assertEquals( resp.status_code, HTTP_404_NOT_FOUND )
@@ -107,13 +107,13 @@ class TestOrderServer(unittest.TestCase):
         self.assertEqual( new_count, order_count - 1)
 
     def test_create_order_with_no_customer_name(self):
-        new_order = {'amount_paid': 200}
+        new_order = {'amount_paid': '200'}
         data = json.dumps(new_order)
         resp = self.app.post('/orders', data=data, content_type='application/json')
         self.assertEqual( resp.status_code, HTTP_400_BAD_REQUEST )
 
     def test_create_order_with_no_content_type(self):
-        new_order = {'amount_paid': 200}
+        new_order = {'amount_paid': '200'}
         data = json.dumps(new_order)
         resp = self.app.post('/orders', data=data)
         self.assertEqual( resp.status_code, HTTP_400_BAD_REQUEST )
@@ -130,7 +130,7 @@ class TestOrderServer(unittest.TestCase):
         self.assertFalse( 'Bob' in resp.data)
         data = json.loads(resp.data)
         query_item = data[0]
-        self.assertEqual(query_item['amount_paid'], 200)
+        self.assertEqual(query_item['amount_paid'], '200')
 
 
 ######################################################################
