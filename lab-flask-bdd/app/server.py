@@ -104,7 +104,7 @@ def delete_orders(id):
 ######################################################################
 # DUPLICATE A Order
 ######################################################################
-@app.route('/orders/<int:id>/duplicate', methods=['PUT'])
+@app.route('/orders/<int:id>/duplicate', methods=['POST'])
 def duplicate_order(id):
     orders = Order.all()
     order = Order.find(id)
