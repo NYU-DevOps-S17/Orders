@@ -14,11 +14,11 @@ def step_impl(context, message):
 def step_impl(context, message):
     assert message not in context.resp.data
 
-@given(u'the following pets')
+@given(u'the following orders')
 def step_impl(context):
     server.data_reset()
     for row in context.table:
-        server.data_load({"name": row['name'], "category": row['category']})
+        server.data_load({"customer_name": row['customer_name'], "amount_paid": row['amount_paid']})
 
 @when(u'I visit "{url}"')
 def step_impl(context, url):
@@ -50,7 +50,7 @@ def step_impl(context, url, id):
     context.resp = context.app.put(target_url, data=context.resp.data, content_type='application/json')
     assert context.resp.status_code == 200
 
-# @then(u'I should see a list of pets')
+# @then(u'I should see a list of orders')
 # def step_impl(context):
 #     assert context.resp.status_code == 200
 #     assert len(context.resp.data) > 0

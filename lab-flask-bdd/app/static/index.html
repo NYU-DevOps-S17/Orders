@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Pet Demo RESTful Service</title>
+    <title>Order Demo RESTful Service</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,38 +14,40 @@
               <img class = "newappIcon" src="static/images/newapp-icon.png">
             </td>
 			<td>
-				<h1 id = "message">Pet Demo REST API Service</h1>
+				<h1 id = "message">Order Demo REST API Service</h1>
 				<p class='description'>
-				GET <a href="/pets" id = "get_pets">/pets</a> to see all the pets.
+				GET <a href="/orders" id = "get_orders">/orders</a> to see all the orders.
 				<br><br>
-                GET <a href="/pets?category=dog">/pets?category=dog</a> to see all of the pets in the 'dog' category.
+                GET <a href="/orders?customer_name=Bob">/orders?customer_name=Bob</a> to see all of the orders with that customer_name.
 				<br><br>
-				GET /pets/{id} retrieves a pet from the DB using an ID.
+				GET /orders/{id} retrieves a order from the DB using an ID.
 				<br><br>
-				PUT /pets/{id} updates a pet using an ID.
+				PUT /orders/{id} updates a order using an ID.
 				<br><br>
-				DELETE /pets/{id} removes a pet from the DB using an ID.
+				DELETE /orders/{id} removes a order from the DB using an ID.
 				<br><br>
-				POST /pets creates an new pet.
+				POST /orders creates an new order.
+                <br><br>
+				POST /orders/{id} duplicates an existing order.
                 <p>Example Data:</p>
                 <pre>
     {
-        "name": "bowser",
-        "category": "dog"
+        "customer_name": "Bob",
+        "amount_paid": 200
     }
                 </pre>
                 Try it now:
-                <form id="create_pets" action="/pets" method="post" enctype="application/json">
+                <form id="create_pets" action="/orders" method="post" enctype="application/json">
                     <div>
-                      <label for="name">What is the name of the pet?</label>
-                      <input name="name" id="name" value="Bowser">
+                      <label for="customer_name">What is the customer_name of the order?</label>
+                      <input name="customer_name" id="customer_name" value="Bob">
                     </div>
                     <div>
-                      <label for="category">What category is the pet?</label>
-                      <input name="category" id="category" value="Dog">
+                      <label for="amount_paid">What amount_paid is the order?</label>
+                      <input name="amount_paid" id="amount_paid" value="200">
                     </div>
                     <div>
-                      <button id="submit">Create Pet</button>
+                      <button id="submit">Create Order</button>
                     </div>
                 </form>
 			</td>
