@@ -104,16 +104,17 @@ def delete_orders(id):
 ######################################################################
 # DUPLICATE A Order
 ######################################################################
-@app.route('/orders/<int:id>/duplicate', methods=['POST'])
+@app.route('/orders/<int:id>/duplicate', methods=['PUT'])
 def duplicate_order(id):
-    orders = Order.all()
     order = Order.find(id)
     if order:
-        message = order['id']
-
-        new_id = orders.next_index()
-        orders[new_id] = {'id': new_id, 'customer_name': message['customer_name'], 'amount_paid': message['amount_paid']}
-        message = orders[new_id]
+        message = order.serialize()
+        data = {}
+        data = {'customer_name': message['customer_name'], 'amount_paid': message['amount_paid']}
+        order = Order()
+    	order.deserialize(data)
+    	order.save()
+        message = order.serialize()
         return make_response(jsonify(message), status.HTTP_201_CREATED, {'Location': order.self_url() })
     else:
         message = { 'error' : 'Order with id: %s was not found' % str(id) }
