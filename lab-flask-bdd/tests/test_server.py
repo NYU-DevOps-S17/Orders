@@ -131,7 +131,17 @@ class TestOrderServer(unittest.TestCase):
         data = json.loads(resp.data)
         query_item = data[0]
         self.assertEqual(query_item['amount_paid'], '200')
-
+        
+    def test_duplicate_nonexisting_order(self):
+        resp = self.app.put('/orders/11/duplicate')
+        self.assertEqual(resp.status_code, HTTP_404_NOT_FOUND)
+        
+    def test_duplicate_existing_order(self):
+        order_count_old = self.get_order_count()
+        resp = self.app.put('/orders/1/duplicate')
+        self.assertEqual(resp.status_code,HTTP_201_CREATED)
+        order_count_new = self.get_order_count()
+        self.assertEqual(order_count_new,order_count_old+1)
 
 ######################################################################
 # Utility functions
