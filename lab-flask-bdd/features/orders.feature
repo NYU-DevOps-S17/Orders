@@ -4,7 +4,7 @@ Feature: The orders service back-end
     So that I can keep track of all orders
 
 Background:
-    Given the following pets
+    Given the following orders
         | id | customer_name       | amount_paid |  
         |  1 | fido                | 100         |
         |  2 | kitty               | 400         |
@@ -12,7 +12,7 @@ Background:
 
 Scenario: The server is running
     When I visit the "home page"
-    Then I should see "Orders Demo REST API Service"
+    Then I should see "Order Demo RESTful Service"
     Then I should not see "404 Not Found"
 
 Scenario: List all orders
