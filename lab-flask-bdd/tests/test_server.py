@@ -123,14 +123,14 @@ class TestOrderServer(unittest.TestCase):
         self.assertEqual( resp.status_code, HTTP_404_NOT_FOUND )
 
     def test_query_order_list(self):
-        resp = self.app.get('/orders', query_string='amount_paid=200')
+        resp = self.app.get('/orders', query_string='customer_name=Tom')
         self.assertEqual( resp.status_code, HTTP_200_OK )
         self.assertTrue( len(resp.data) > 0 )
         self.assertTrue( 'Tom' in resp.data)
         self.assertFalse( 'Bob' in resp.data)
         data = json.loads(resp.data)
         query_item = data[0]
-        self.assertEqual(query_item['amount_paid'], '200')
+        self.assertEqual(query_item['customer_name'], 'Tom')
 
 
 ######################################################################

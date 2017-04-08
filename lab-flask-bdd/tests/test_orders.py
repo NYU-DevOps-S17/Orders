@@ -118,10 +118,10 @@ class TestOrders(unittest.TestCase):
         order = Order.find(2)
         self.assertIs( order, None)
 
-    def test_find_by_amount_paid(self):
+    def test_find_by_customer_name(self):
         Order(0, "Tom", "200").save()
         Order(0, "Bob", "300").save()
-        orders = Order.find_by_amount_paid("300")
+        orders = Order.find_by_customer_name("Bob")
         self.assertNotEqual( len(orders), 0 )
         self.assertEqual( orders[0].amount_paid, "300" )
         self.assertEqual( orders[0].customer_name, "Bob" )
