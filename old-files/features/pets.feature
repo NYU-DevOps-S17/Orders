@@ -4,15 +4,15 @@ Feature: The orders service back-end
     So that I can keep track of all orders
 
 Background:
-    Given the following orders
+    Given the following pets
         | id | customer_name       | amount_paid |  
-        |  1 | fido                | 100         |
-        |  2 | kitty               | 400         |
-        |  3 | leo                 | 1000        |
+        |  1 | fido                | dog         |
+        |  2 | kitty               | cat         |
+        |  3 | leo                 | lion        |
 
 Scenario: The server is running
     When I visit the "home page"
-    Then I should see "Order Demo RESTful Service"
+    Then I should see "Orders Demo REST API Service"
     Then I should not see "404 Not Found"
 
 Scenario: List all orders
@@ -23,9 +23,9 @@ Scenario: List all orders
 
 Scenario: Update a order
     When I retrieve "/orders" with id "1"
-    And I change "amount_paid" to "200"
+    And I change "amount_paid" to "big dog"
     And I update "/orders" with id "1"
-    Then I should see "200"
+    Then I should see "big dog"
 
 Scenario: Delete a order
     When I visit "/orders"
