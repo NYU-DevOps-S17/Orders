@@ -18,7 +18,7 @@ This will place you into an Ubuntu VM all set to run the code.
 
 You can run the code to test it out in your browser with the following command:
 
-    $ python app/app.py
+    $ python run.py
 
 You should be able to see it at: http://localhost:5000/
 
@@ -32,7 +32,16 @@ Once there is an update on the master branch, BlueMix will auto build/deploy the
 
     BlueMix URL: https://nyu-devops-orders.mybluemix.net/
 
+## BDD / TDD tests command when running locally
+
+Use the following commands to test BDD and TDD results.
+```bash
+    BDD: $ behave
+    TDD: $ nosetests
+```
+
 ## Structure of application
+
 **Procfile** - Contains the command to run when you application starts on Bluemix. 
 
 **requirements.txt** - Contains the external python packages that are required by the application. 
@@ -45,6 +54,8 @@ Once there is an update on the master branch, BlueMix will auto build/deploy the
 
 **app folder** - The folder where the python application script stored.
 
-**sample folder** - The folder containing sample lab code
+**old-files folder** - The folder containing old lab code.
 
-**static folder** - The folder containing index.html and images and stylesheet
+**features folder** - The folder containing BDD tests feature file and steps.
+
+**tests folder** - The folder containing TDD tests py files.
