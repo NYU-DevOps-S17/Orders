@@ -1,3 +1,4 @@
+######################################################################
 # Copyright 2016, 2017 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+######################################################################
 
 import os
 import logging
@@ -19,7 +21,7 @@ from redis.exceptions import ConnectionError
 from flask import Flask, Response, jsonify, request, json, url_for, make_response
 from flask_api import status    # HTTP Status Codes
 from werkzeug.exceptions import NotFound
-from models import Orders
+from models import Order
 from . import app
 
 # Error handlers reuire app to be initialized so we must import
@@ -33,18 +35,20 @@ redis = None
 ######################################################################
 @app.route('/')
 def index():
+    # data = '{customer_name: <string>, amount_paid: <string>}'
+    # url = request.base_url + 'orders' # url_for('list_orders')
+    # return jsonify(customer_name='Order Demo REST API Service', version='1.0', url=url, data=data), status.HTTP_200_OK
     return app.send_static_file('index.html')
 
-
 ######################################################################
-# LIST ALL Orders
+# LIST ALL ORDERS
 ######################################################################
 @app.route('/orders', methods=['GET'])
 def list_orders():
     orders = []
-    amount_paid = request.args.get('amount_paid')
-    if amount_paid:
-        orders = Order.find_by_amount_paid(amount_paid)
+    customer_name = request.args.get('customer_name')
+    if customer_name:
+        orders = Order.find_by_customer_name(customer_name)
     else:
         orders = Order.all()
 
@@ -52,16 +56,15 @@ def list_orders():
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 ######################################################################
-# RETRIEVE A Order
+# RETRIEVE A ORDER
 ######################################################################
 @app.route('/orders/<int:id>', methods=['GET'])
 def get_orders(id):
     order = Order.find_or_404(id)
     return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
-
 ######################################################################
-# ADD A NEW Order
+# ADD A NEW ORDER
 ######################################################################
 @app.route('/orders', methods=['POST'])
 def create_orders():
@@ -78,9 +81,8 @@ def create_orders():
     message = order.serialize()
     return make_response(jsonify(message), status.HTTP_201_CREATED, {'Location': order.self_url() })
 
-
 ######################################################################
-# UPDATE AN EXISTING Order
+# UPDATE AN EXISTING ORDER
 ######################################################################
 @app.route('/orders/<int:id>', methods=['PUT'])
 def update_orders(id):
@@ -89,9 +91,8 @@ def update_orders(id):
     order.save()
     return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
-
 ######################################################################
-# DELETE A Order
+# DELETE A ORDER
 ######################################################################
 @app.route('/orders/<int:id>', methods=['DELETE'])
 def delete_orders(id):
@@ -105,22 +106,25 @@ def delete_orders(id):
 ######################################################################
 @app.route('/orders/<int:id>/duplicate', methods=['PUT'])
 def duplicate_order(id):
-    if orders.has_key(id):
-        message = orders[id]
-
-        new_id = next_index()
-        orders[new_id] = {'id': new_id, 'customer_name': message['customer_name'], 'amount_paid': message['amount_paid']}
-        message = orders[new_id]
-        rc = HTTP_201_CREATED
+    order = Order.find(id)
+    if order:
+        message = order.serialize()
+        data = {}
+        data = {'customer_name': message['customer_name'], 'amount_paid': message['amount_paid']}
+        order = Order()
+    	order.deserialize(data)
+    	order.save()
+        message = order.serialize()
+        return make_response(jsonify(message), status.HTTP_201_CREATED, {'Location': order.self_url() })
     else:
         message = { 'error' : 'Order with id: %s was not found' % str(id) }
-        rc = HTTP_404_NOT_FOUND
+        return make_response(jsonify(message), status.HTTP_400_BAD_REQUEST)
 
-    return reply(message, rc)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
+# load sample data
 def data_load(data):
     Order().deserialize(data).save()
 
@@ -128,17 +132,17 @@ def data_load(data):
 def data_reset():
     redis.flushall()
 
-@app.before_first_request
-def setup_logging():
-    if not app.debug:
+#@app.before_first_request
+#def setup_logging():
+#    if not app.debug:
         # In production mode, add log handler to sys.stderr.
-        handler = logging.StreamHandler()
-        handler.setLevel(app.config['LOGGING_LEVEL'])
+#        handler = logging.StreamHandler()
+#        handler.setLevel(app.config['LOGGING_LEVEL'])
         # formatter = logging.Formatter(app.config['LOGGING_FORMAT'])
         #'%Y-%m-%d %H:%M:%S'
-        formatter = logging.Formatter('[%(asctime)s] - %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
-        handler.setFormatter(formatter)
-        app.logger.addHandler(handler)
+#        formatter = logging.Formatter('[%(asctime)s] - %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+#        handler.setFormatter(formatter)
+#        app.logger.addHandler(handler)
 
 ######################################################################
 # Connect to Redis and catch connection exceptions

@@ -9,17 +9,9 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/trusty64"
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "forwarded_port", guest: 5000, host: 5000
-
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
   config.vm.network "private_network", ip: "192.168.33.10"
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
@@ -38,13 +30,21 @@ Vagrant.configure(2) do |config|
   # Setup a Python development environment
   ######################################################################
   config.vm.provision "shell", inline: <<-SHELL
+    wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+    echo "deb http://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
     sudo apt-get update
-    sudo apt-get install -y git zip tree python-pip python-dev build-essential
+    sudo apt-get install -y git zip tree python-pip python-dev build-essential cf-cli
+    # Install PhantomJS for Selenium browser support
+    sudo apt-get install -y chrpath libssl-dev libxft-dev
     sudo apt-get -y autoremove
-    # Install the Cloud Foundry CLI
-    wget -O cf-cli-installer_6.24.0_x86-64.deb 'https://cli.run.pivotal.io/stable?release=debian64&version=6.24.0&source=github-rel'
-    sudo dpkg -i cf-cli-installer_6.24.0_x86-64.deb
-    rm cf-cli-installer_6.24.0_x86-64.deb
+    # PhantomJS https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+    cd ~
+    export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64"
+    wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
+    sudo tar xvjf $PHANTOM_JS.tar.bz2
+    sudo mv $PHANTOM_JS /usr/local/share
+    sudo ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
+    rm -f $PHANTOM_JS.tar.bz2
     # Install app dependencies
     cd /vagrant
     sudo pip install -r requirements.txt
