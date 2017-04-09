@@ -133,8 +133,8 @@ class TestOrderServer(unittest.TestCase):
         self.assertEqual(query_item['customer_name'], 'Tom')
         
     def test_duplicate_nonexisting_order(self):
-        resp = self.app.put('/orders/11/duplicate')
-        self.assertEqual(resp.status_code, HTTP_404_NOT_FOUND)
+        resp = self.app.put('/orders/11111/duplicate')
+        self.assertEqual(resp.status_code, HTTP_400_BAD_REQUEST)
         
     def test_duplicate_existing_order(self):
         order_count_old = self.get_order_count()
