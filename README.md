@@ -1,4 +1,7 @@
 # Bluemix Python Web application
+
+[![Build Status](https://travis-ci.org/NYU-DevOps-S17/Orders.svg?branch=master)](https://travis-ci.org/NYU-DevOps-S17/Orders)
+
 This repository if for Team Bravo Orders Project.
 
 Follow the steps below to get the code up and running locally.
