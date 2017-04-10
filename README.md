@@ -1,7 +1,6 @@
 # Bluemix Python Web application
 
 [![Build Status](https://travis-ci.org/NYU-DevOps-S17/Orders.svg?branch=master)](https://travis-ci.org/NYU-DevOps-S17/Orders)
-
 [![codecov](https://codecov.io/gh/NYU-DevOps-S17/Orders/branch/master/graph/badge.svg)](https://codecov.io/gh/NYU-DevOps-S17/Orders)
 
 This repository if for Team Bravo Orders Project.
