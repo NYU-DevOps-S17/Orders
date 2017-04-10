@@ -132,17 +132,17 @@ def data_load(data):
 def data_reset():
     redis.flushall()
 
-#@app.before_first_request
-#def setup_logging():
-#    if not app.debug:
+@app.before_first_request
+def setup_logging():
+    if not app.debug:
         # In production mode, add log handler to sys.stderr.
-#        handler = logging.StreamHandler()
-#        handler.setLevel(app.config['LOGGING_LEVEL'])
+        handler = logging.StreamHandler()
+        handler.setLevel(app.config['LOGGING_LEVEL'])
         # formatter = logging.Formatter(app.config['LOGGING_FORMAT'])
         #'%Y-%m-%d %H:%M:%S'
-#        formatter = logging.Formatter('[%(asctime)s] - %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
-#        handler.setFormatter(formatter)
-#        app.logger.addHandler(handler)
+        formatter = logging.Formatter('[%(asctime)s] - %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+        handler.setFormatter(formatter)
+        app.logger.addHandler(handler)
 
 ######################################################################
 # Connect to Redis and catch connection exceptions
