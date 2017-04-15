@@ -35,3 +35,8 @@ Scenario: Delete a order
     And I visit "/orders"
     Then I should see "fido"
     And I should not see "kitty"
+
+Scenario: Duplicate an order
+    When I retrieve "/orders" with id "1"
+    And I use "/orders" the id "1" of that order so the customer can re-order their previous order
+    Then I should see an order on "/orders" with the same amount_paid and customer name as the original order

@@ -50,6 +50,27 @@ def step_impl(context, url, id):
     context.resp = context.app.put(target_url, data=context.resp.data, content_type='application/json')
     assert context.resp.status_code == 200
 
+@when(u'I use "{url}" the id "{id}" of that order so the customer can re-order their previous order')
+def step_impl(context, url, id):
+    target_url = url + '/' + id + '/duplicate'
+    context.resp = context.app.put(target_url, data=context.resp.data, content_type='application/json')
+    assert context.resp.status_code == 201
+
+@then(u'I should see an order on "{url}" with the same amount_paid and customer name as the original order')
+def step_impl(context, url):
+    context.resp = context.app.get(url, data=context.resp.data, content_type='application/json')
+    data = json.loads(context.resp.data)
+    found = False
+
+    for entry in data:
+        for compare_entry in data:
+            if entry['id'] == compare_entry['id']:
+                continue
+            if entry['customer_name'] == compare_entry['customer_name'] and entry['amount_paid'] == compare_entry['amount_paid']:
+                found = True
+
+    assert found == True
+
 # @then(u'I should see a list of orders')
 # def step_impl(context):
 #     assert context.resp.status_code == 200

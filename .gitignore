@@ -7,6 +7,7 @@ venv/
 
 # Vagrant
 .vagrant
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
