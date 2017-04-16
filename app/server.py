@@ -134,7 +134,7 @@ def data_reset():
 
 @app.before_first_request
 def setup_logging():
-    if not app.debug:
+    if not app.debug: # pragma: no cover
         # In production mode, add log handler to sys.stderr.
         handler = logging.StreamHandler()
         handler.setLevel(app.config['LOGGING_LEVEL'])
@@ -151,7 +151,7 @@ def connect_to_redis(hostname, port, password):
     redis = Redis(host=hostname, port=port, password=password)
     try:
         redis.ping()
-    except ConnectionError:
+    except ConnectionError: # pragma: no cover
         redis = None
     return redis
 
@@ -163,7 +163,7 @@ def connect_to_redis(hostname, port, password):
 #   2) With Redis running on the local server as with Travis CI
 #   3) With Redis --link ed in a Docker container called 'redis'
 ######################################################################
-def inititalize_redis():
+def inititalize_redis(): # pragma: no cover
     global redis
     redis = None
     # Get the crdentials from the Bluemix environment
