@@ -8,6 +8,7 @@ from redis import Redis
 from werkzeug.exceptions import NotFound
 from app.models import Order
 from app.custom_exceptions import DataValidationError
+from app import server
 
 ######################################################################
 #  T E S T   C A S E S
@@ -15,7 +16,9 @@ from app.custom_exceptions import DataValidationError
 class TestOrders(unittest.TestCase):
 
     def setUp(self):
-        Order.use_db(Redis(host='127.0.0.1', port=6379))
+	server.inititalize_redis()
+	Order.use_db(server.redis)
+        #Order.use_db(Redis(host='127.0.0.1', port=6379))
         Order.remove_all()
 
     def test_create_a_order(self):
