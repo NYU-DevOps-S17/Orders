@@ -8,6 +8,7 @@ from redis import Redis
 from werkzeug.exceptions import NotFound
 from app.models import Order
 from app.custom_exceptions import DataValidationError
+from app import server
 
 ######################################################################
 #  T E S T   C A S E S
