@@ -26,6 +26,8 @@ You can run the code to test it out in your browser with the following command:
 
 You should be able to see it at: http://localhost:5000/
 
+Swagger doc page: http://localhost:5000/apidocs/index.html
+
 When you are done, you can use `Ctrl+C` to stop the server and then exit and shut down the vm with:
 
     $ vagrant halt
@@ -35,6 +37,7 @@ When you are done, you can use `Ctrl+C` to stop the server and then exit and shu
 Once there is an update on the master branch, BlueMix will auto build/deploy the latest working copy.
 
     BlueMix URL: https://nyu-devops-orders.mybluemix.net/
+    BlueMix Swagger doc page: https://nyu-devops-orders.mybluemix.net/apidocs/index.html?url=/v1/spec
 
 ## BDD / TDD tests command when running locally
 
