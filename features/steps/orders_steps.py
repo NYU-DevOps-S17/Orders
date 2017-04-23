@@ -25,6 +25,11 @@ def step_impl(context, url):
     context.resp = context.app.get(url)
     assert context.resp.status_code == 200
 
+@when(u'I attempt to query for "{url}" and search by customer name "{customer_name}"')
+def step_impl(context, url, customer_name):
+    context.resp = context.app.get(url + '?customer_name=' + customer_name)
+    assert context.resp.status_code == 200
+
 @when(u'I delete "{url}" with id "{id}"')
 def step_impl(context, url, id):
     target_url = url + '/' + id

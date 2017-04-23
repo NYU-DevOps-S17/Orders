@@ -21,6 +21,18 @@ Scenario: List all orders
     And I should see "kitty"
     And I should see "leo"
 
+Scenario: Query for Customer Name
+    When I attempt to query for "/orders" and search by customer name "fido"
+    Then I should see "1"
+    And I should see "fido"
+    And I should see "100"
+
+Scenario: Get a order
+    When I retrieve "/orders" with id "1"
+    Then I should see "1"
+    And I should see "fido"
+    And I should see "100"
+
 Scenario: Update a order
     When I retrieve "/orders" with id "1"
     And I change "amount_paid" to "200"
