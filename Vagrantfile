@@ -1,21 +1,47 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# WARNING: You will need the following plugin:
+# vagrant plugin install vagrant-vbguest
+
+unless Vagrant.has_plugin?("vagrant-docker-compose")
+  system("vagrant plugin install vagrant-docker-compose")
+  puts "Dependencies installed, please try the command again."
+  exit
+end
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure(2) do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/trusty64"
-  config.vm.network "forwarded_port", guest: 5000, host: 5000
-  config.vm.network "private_network", ip: "192.168.33.10"
 
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  # expose port 8080 in the VM to 8080 on the host
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 5000, host: 5000, host_ip: "127.0.0.1"
+
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  config.vm.network "private_network", ip: "192.168.33.10"
+  # config.vm.network "public_network"
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
+  #
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
     #vb.gui = true
+
     # Customize the amount of memory on the VM:
     vb.memory = "512"
     vb.cpus = 1
@@ -30,21 +56,15 @@ Vagrant.configure(2) do |config|
   # Setup a Python development environment
   ######################################################################
   config.vm.provision "shell", inline: <<-SHELL
-    wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
-    echo "deb http://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
     sudo apt-get update
-    sudo apt-get install -y git zip tree python-pip python-dev build-essential cf-cli
-    # Install PhantomJS for Selenium browser support
-    sudo apt-get install -y chrpath libssl-dev libxft-dev
+    sudo apt-get install -y git zip tree python-pip python-dev build-essential
     sudo apt-get -y autoremove
-    # PhantomJS https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-    cd ~
-    export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64"
-    wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
-    sudo tar xvjf $PHANTOM_JS.tar.bz2
-    sudo mv $PHANTOM_JS /usr/local/share
-    sudo ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
-    rm -f $PHANTOM_JS.tar.bz2
+    # Install the Cloud Foundry CLI
+    wget -O cf-cli-installer_6.24.0_x86-64.deb 'https://cli.run.pivotal.io/stable?release=debian64&version=6.24.0&source=github-rel'
+    sudo dpkg -i cf-cli-installer_6.24.0_x86-64.deb
+    rm cf-cli-installer_6.24.0_x86-64.deb
+    # Make vi look nice
+    sudo -u vagrant echo "colorscheme desert" > ~/.vimrc
     # Install app dependencies
     cd /vagrant
     sudo pip install -r requirements.txt
@@ -61,9 +81,24 @@ Vagrant.configure(2) do |config|
 
   # Add Redis docker container
   config.vm.provision "docker" do |d|
+    d.pull_images "alpine:3.3"
     d.pull_images "redis:alpine"
     d.run "redis:alpine",
-      args: "--restart=always -d --name redis -h redis -p 6379:6379 -v /var/lib/redis/data:/data"
+      args: "--restart=always -d --name redis -p 6379:6379 -v /var/lib/redis/data:/data"
   end
+
+  # Add Docker compose
+  # Note: you need to install the vagrant-docker-compose or this will fail!
+  # vagrant plugin install vagrant-docker-compose
+  # config.vm.provision :docker_compose, yml: "/vagrant/docker-compose.yml", run: "always"
+  # config.vm.provision :docker_compose, yml: "/vagrant/docker-compose.yml", rebuild: true, run: "always"
+  config.vm.provision :docker_compose
+
+  # Install Docker Compose after Docker Engine
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    sudo pip install docker-compose
+    # Install the IBM Container plugin as vagrant
+    sudo -H -u vagrant bash -c "echo Y | cf install-plugin https://static-ice.ng.bluemix.net/ibm-containers-linux_x64"
+  SHELL
 
 end
