@@ -25,6 +25,7 @@ ADD features /Orders/features
 ADD tests /Orders/tests
 ADD run.py /Orders
 ADD config.py /Orders
+ADD requirements.txt /Orders
 
 # Run the service
 CMD [ "python", "run.py" ]
