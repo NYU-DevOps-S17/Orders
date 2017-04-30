@@ -36,9 +36,9 @@ When you are done, you can use `Ctrl+C` to stop the server and then exit and shu
 
 Once there is an update on the master branch, BlueMix will auto build/deploy the latest working copy.
 
-    BlueMix URL: https://nyu-devops-orders.mybluemix.net/
-    BlueMix Swagger doc page: https://nyu-devops-orders.mybluemix.net/apidocs/index.html?url=/v1/spec
-    BlueMix docker container deploy: https://nyu-lab-docker-kj.mybluemix.net/
+    BlueMix URL: https://nyu-devops-orders-prod.mybluemix.net/
+    BlueMix Swagger doc page: https://nyu-devops-orders-prod.mybluemix.net/apidocs/index.html?url=/v1/spec
+    BlueMix docker container deploy: https://hello-containers-20170426230123948.mybluemix.net/
 
 ## BDD / TDD tests command when running locally
 
