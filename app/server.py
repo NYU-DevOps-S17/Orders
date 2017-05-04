@@ -252,23 +252,23 @@ def update_orders(id):
 ######################################################################
 @app.route('/orders/<int:id>', methods=['DELETE'])
 def delete_orders(id):
-    # """
-    # Delete a Order
-    # This endpoint will delete a Order based the id specified in the path
-    # ---
-    # tags:
-    #   - Orders
-    # description: Deletes a Order from the database
-    # parameters:
-    #   - name: id
-    #     in: path
-    #     description: ID of order to delete
-    #     type: integer
-    #     required: true
-    # responses:
-    #   204:
-    #     description: Order deleted
-    # """
+    """
+    Delete a Order
+    This endpoint will delete a Order based the id specified in the path
+    ---
+    tags:
+      - Orders
+    description: Deletes a Order from the database
+    parameters:
+      - name: id
+        in: path
+        description: ID of order to delete
+        type: integer
+        required: true
+    responses:
+      204:
+        description: Order deleted
+    """
     order = Order.find(id)
     if order:
         order.delete()
